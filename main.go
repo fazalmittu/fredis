@@ -10,8 +10,11 @@ func main() {
 
 	mux := http.NewServeMux()
 
+	// CORE
 	mux.HandleFunc("GET /cache/{key}", service.GetItem)
 	mux.HandleFunc("PUT /cache/{key}", service.SetItem)
+	mux.HandleFunc("DELETE /cache/{key}", service.DelItem)
+	mux.HandleFunc("GET /cache/{key}/exists", service.Exists)
 
 	port := ":8080"
 	log.Printf("Listening on http://localhost%s\n", port)

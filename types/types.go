@@ -6,6 +6,10 @@ type Item struct {
 	Time  int         // ttl, set
 }
 
-type RequestBody struct {
+type CoreRequestBody struct {
 	Value string
+}
+
+type CounterRequestBody struct {
+	Amount int
 }

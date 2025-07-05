@@ -16,6 +16,11 @@ func main() {
 	mux.HandleFunc("DELETE /cache/{key}", service.DelItem)
 	mux.HandleFunc("GET /cache/{key}/exists", service.Exists)
 
+	// COUNTER
+	mux.HandleFunc("PUT /counter/{key}", service.CountController)
+
+	// QUEUE
+
 	port := ":8080"
 	log.Printf("Listening on http://localhost%s\n", port)
 	err := http.ListenAndServe(port, mux)

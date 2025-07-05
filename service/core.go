@@ -21,7 +21,7 @@ func SetItem(w http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
 	key := r.PathValue("key")
 
-	var body types.RequestBody
+	var body types.CoreRequestBody
 
 	err := json.NewDecoder(r.Body).Decode(&body)
 	if err != nil {

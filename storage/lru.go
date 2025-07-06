@@ -53,6 +53,9 @@ func removeDLL(n *types.Node) *types.Node {
 
 	dll.Length -= 1
 
+	n.Next = nil
+	n.Prev = nil
+
 	return n
 
 }
@@ -113,6 +116,9 @@ func Promote(k string) {
 
 		// new head
 		dll.Head = &node
+		if dll.Length == 0 {
+			dll.Tail = dll.Head
+		}
 
 		// update pointer
 		val.Place = dll.Head

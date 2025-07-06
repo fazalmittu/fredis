@@ -1,6 +1,7 @@
 package storage
 
 import (
+	"fmt"
 	"fredis/types"
 )
 
@@ -32,7 +33,7 @@ SOLUTION
 
 */
 
-const DEFAULT_MAX = 100
+const DEFAULT_MAX = 5
 
 func removeDLL(n *types.Node) *types.Node {
 
@@ -43,15 +44,23 @@ func removeDLL(n *types.Node) *types.Node {
 
 	if next != nil {
 		n.Next.Prev = prev
-		dll.Tail = prev
 	}
 
 	if prev != nil {
 		n.Prev.Next = next
-		dll.Head = next
 	}
 
-	dll.Length -= 1
+	if dll.Head == n {
+		dll.Head = next
+	}
+	if dll.Tail == n {
+		dll.Tail = prev
+	}
+
+	if prev == nil && next == nil {
+		dll.Head = nil
+		dll.Tail = nil
+	}
 
 	n.Next = nil
 	n.Prev = nil
@@ -72,50 +81,63 @@ func Remove(k string, hard bool) {
 
 	if hard {
 		delete(cache, k)
+		dll.Length -= 1
 	}
+
+	PrintDLL()
 
 }
 
 func Promote(k string, v interface{}) {
 
 	cache := GetCache()
+	dll := GetDLL()
 
 	// - check whether it exists in the hashmap
 	val, exists := cache[k]
 
 	if exists {
 
-		// remove from its current spot
 		node := val.Place
-		newNode := removeDLL(node)
 
-		dll := GetDLL()
+		// remove from its current spot if it's not already at head
+		if dll.Head != node {
+			newNode := removeDLL(node)
 
-		// make it the new head
-		newNode.Next = dll.Head
-		dll.Head = newNode
+			// make it the new head
+			newNode.Next = dll.Head
+			newNode.Prev = nil
 
-		// update pointer in the cache map
-		val.Place = dll.Head
-		cache[k] = val
+			if dll.Head != nil {
+				dll.Head.Prev = newNode
+			}
+
+			dll.Head = newNode
+
+			// update pointer in the cache map
+			val.Place = dll.Head
+			cache[k] = val
+		}
 
 	} else {
 
-		dll := GetDLL()
-
 		if dll.Length == DEFAULT_MAX {
-			removeDLL(dll.Tail)
+			Remove(dll.Tail.Key, true)
 		}
 
 		// create new node
-		node := types.Node{
+		node := &types.Node{
 			Key:  k,
 			Prev: nil,
 			Next: dll.Head,
 		}
 
 		// new head
-		dll.Head = &node
+		if dll.Head != nil {
+			dll.Head.Prev = node
+		}
+
+		dll.Head = node
 		if dll.Length == 0 {
 			dll.Tail = dll.Head
 		}
@@ -133,5 +155,28 @@ func Promote(k string, v interface{}) {
 		dll.Length += 1
 
 	}
+
+	PrintDLL()
+}
+
+func PrintDLL() {
+	dll := GetDLL()
+
+	curr := dll.Head
+	if curr == nil {
+		fmt.Println("Doubly Linked List is empty.")
+		return
+	}
+
+	fmt.Print("Doubly Linked List: ")
+	for curr != nil {
+		fmt.Printf("[%s]", curr.Key)
+		if curr.Next != nil {
+			fmt.Print(" <-> ")
+		}
+		curr = curr.Next
+	}
+	fmt.Println()
+	fmt.Println("Length", dll.Length)
 
 }

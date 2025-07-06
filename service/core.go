@@ -14,9 +14,16 @@ import (
 func GetItem(w http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
 	key := r.PathValue("key")
-	fmt.Fprintf(w, "%s", utils.FormatValue(cache[key].Value)) // use format str bc func expects a constant as second param
+	val, exists := cache[key]
+	if !exists {
+		http.Error(w, "nil", http.StatusNotFound)
+		return
+	}
 
-	storage.Promote(key, cache[key].Value)
+	// promote *after* confirming existence
+	storage.Promote(key, val.Value)
+
+	fmt.Fprintf(w, "%s", utils.FormatValue(val.Value))
 
 }
 
@@ -59,14 +66,13 @@ func Exists(w http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
 	key := r.PathValue("key")
 
-	_, exists := cache[key]
+	val, exists := cache[key]
 
 	if exists {
 		fmt.Fprintf(w, "1")
+		storage.Promote(key, val.Value) // find a better way to do this
 	} else {
 		fmt.Fprintf(w, "0")
 	}
-
-	storage.Promote(key, "") // find a better way to do this
 
 }

@@ -5,7 +5,11 @@ import (
 )
 
 var cache = make(map[string]types.Item)
-var dll = types.DLL{}
+var dll = types.DLL{
+	Head:   nil,
+	Tail:   nil,
+	Length: 0,
+}
 
 func GetCache() map[string]types.Item {
 	return cache

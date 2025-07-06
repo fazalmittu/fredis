@@ -8,7 +8,7 @@ import (
 	"net/http"
 )
 
-// // have to implement INCR, DECR, INCRBY, DECRBY
+// have to implement INCR, DECR, INCRBY, DECRBY
 
 func CountController(w http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
@@ -39,4 +39,6 @@ func CountController(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Value is not an integer", http.StatusUnprocessableEntity)
 		}
 	}
+
+	storage.Promote(key, item.Value)
 }

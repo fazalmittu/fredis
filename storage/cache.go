@@ -11,6 +11,6 @@ func GetCache() map[string]types.Item {
 	return cache
 }
 
-func GetDLL() types.DLL {
-	return dll
+func GetDLL() *types.DLL {
+	return &dll
 }

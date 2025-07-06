@@ -36,16 +36,22 @@ const DEFAULT_MAX = 100
 
 func removeDLL(n *types.Node) *types.Node {
 
+	dll := GetDLL()
+
 	prev := n.Prev
 	next := n.Next
 
 	if next != nil {
 		n.Next.Prev = prev
+		dll.Tail = prev
 	}
 
 	if prev != nil {
 		n.Prev.Next = next
+		dll.Head = next
 	}
+
+	dll.Length -= 1
 
 	return n
 
@@ -95,15 +101,7 @@ func Promote(k string) {
 		dll := GetDLL()
 
 		if dll.Length == DEFAULT_MAX {
-
-			// replace tail with new one
-			newTail := dll.Tail.Prev
-			newTail.Next = nil
-			dll.Tail = newTail
-
-			// length goes down
-			dll.Length -= 1
-
+			removeDLL(dll.Tail)
 		}
 
 		// create new node

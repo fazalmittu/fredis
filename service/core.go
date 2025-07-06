@@ -15,10 +15,12 @@ func GetItem(w http.ResponseWriter, r *http.Request) {
 	cache := storage.GetCache()
 	key := r.PathValue("key")
 	fmt.Fprintf(w, "%s", utils.FormatValue(cache[key].Value)) // use format str bc func expects a constant as second param
+
+	storage.Promote(key, cache[key].Value)
+
 }
 
 func SetItem(w http.ResponseWriter, r *http.Request) {
-	cache := storage.GetCache()
 	key := r.PathValue("key")
 
 	var body types.CoreRequestBody
@@ -29,9 +31,10 @@ func SetItem(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	cache[key] = types.Item{
-		Value: body.Value,
-	}
+	// cache[key] = types.Item{
+	// 	Value: body.Value,
+	// }
+	storage.Promote(key, body.Value)
 
 	fmt.Fprintf(w, "OK")
 
@@ -44,7 +47,8 @@ func DelItem(w http.ResponseWriter, r *http.Request) {
 	_, exists := cache[key]
 
 	if exists {
-		delete(cache, key)
+		// delete(cache, key)
+		storage.Remove(key, true)
 		fmt.Fprintf(w, "1")
 	} else {
 		fmt.Fprintf(w, "0")
@@ -62,5 +66,7 @@ func Exists(w http.ResponseWriter, r *http.Request) {
 	} else {
 		fmt.Fprintf(w, "0")
 	}
+
+	storage.Promote(key, "") // find a better way to do this
 
 }

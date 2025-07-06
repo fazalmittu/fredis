@@ -76,7 +76,7 @@ func Remove(k string, hard bool) {
 
 }
 
-func Promote(k string) {
+func Promote(k string, v interface{}) {
 
 	cache := GetCache()
 
@@ -120,8 +120,13 @@ func Promote(k string) {
 			dll.Tail = dll.Head
 		}
 
+		// create new item
+		val = types.Item{
+			Value: v,
+			Place: dll.Head,
+		}
+
 		// update pointer
-		val.Place = dll.Head
 		cache[k] = val
 
 		// update length
